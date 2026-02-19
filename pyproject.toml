@@ -1,0 +1,96 @@
+[build-system]
+requires = ["setuptools>=81"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pkg-resources-backport"
+dynamic = ["version"]
+description = "snapshot of last pkg_resources module from setuptools"
+readme.content-type = "text/x-rst"
+readme.file = "README.rst"
+requires-python = ">=3.9"
+license = "MIT"
+license-files = [
+  "LICENSE",
+]
+authors = [
+    { name = "Python Packaging Authority", email = "distutils-sig@python.org" },
+]
+maintainers = [
+    { name = "Autumn Jolitz" },
+]
+keywords = [
+    "pkg-resources",
+    "pkgresources",
+    "setuptools",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Archiving :: Packaging",
+    "Topic :: System :: Systems Administration",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "setuptools>=81.0.0",
+]
+
+[project.optional-dependencies]
+tests = [
+    # upstream
+    "pytest >= 6, != 8.1.*",
+
+    # local
+    "virtualenv>=13.0.0",
+    "wheel>=0.44.0", # Consistent requirement normalisation in METADATA (see #4547)
+    "pip>=19.1", # For proper file:// URLs support.
+    "packaging>=24.2",
+    "jaraco.envs>=2.2",
+    "pytest-xdist>=3", # Dropped dependency on pytest-fork and py
+    "jaraco.path>=3.7.2", # Typing fixes
+    "build[virtualenv]>=1.0.3",
+    "filelock>=3.4.0",
+    "ini2toml[lite]>=0.14",
+    "tomli-w>=1.0.0",
+    "pytest-timeout",
+    'pytest-perf; sys_platform != "cygwin"', # workaround for jaraco/inflect#195, pydantic/pydantic-core#773 (see #3986)
+    # for tools/finalize.py
+    'jaraco.develop >= 7.21; python_version >= "3.9" and sys_platform != "cygwin"',
+    "pytest-home >= 0.5",
+    "pytest-subprocess",
+
+    # workaround for pypa/pyproject-hooks#206
+    "pyproject-hooks!=1.1",
+
+    "jaraco.test>=5.5", # py.typed
+]
+
+[project.urls]
+Homepage = "https://github.com/autumnjolitz/pkg-resources-backport"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.dynamic]
+version = {attr = "pkg_resources._version.__version__"}  # any module attribute compatible with ast.literal_eval
+readme = {file = ["README.rst"], content-type = "text/x-rst"}
+
+[tool.setuptools.packages.find]
+include = [
+    "pkg_resources*",
+]
+exclude = [
+    "*.tests",
+    "*.tests.*",
+]
+namespaces = true
+
+[tool.setuptools.exclude-package-data]
+# Remove ruff.toml when installing vendored packages (#4652)
+"*" = ["ruff.toml"]
+
+[tool.distutils.sdist]
+formats = "zip"
